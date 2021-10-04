@@ -4,33 +4,51 @@ import CardComponent from './components/Card-Component/Card';
 import faker from 'faker';
 
 function App() {
-    const [name, setName] = useState(faker.name.findName());
     const [showCard, setShowCard] = useState(true);
 
-    const btns = (
-        <div>
-            <button className="button button1">Yes</button>
-            <button className="button button2">No</button>
-        </div>
-    )
 
-    const changeNameHandler = () => setName(faker.name.findName());
+    const generateRandomData = (quantityRecord) => {
+        if (localStorage.getItem('data')) {
+            return JSON.parse(localStorage.getItem('data'));
+        } else {
+            const data = new Array(quantityRecord).fill({}).map(record => ({
+                id: faker.datatype.uuid(),
+                avatar: faker.image.avatar(),
+                fullname: faker.name.findName(),
+                email: faker.internet.email(),
+                gender: faker.name.gender,
+                phone: faker.phone.phoneNumber()
+            }));
 
-    const changeInputHandler = event => setName(event.target.value);
+            localStorage.setItem('data', JSON.stringify(data));
+            return data;
+        }
+    }
+
+    const [listCard, setListCard] = useState(generateRandomData(3));
 
     const toggleShowCard = () => setShowCard(!showCard);
+    const deleteHandler = (index) => {
+        const copyListCard = [...listCard];
+        copyListCard.splice(index, 1);
+        setListCard(copyListCard);
+    }
 
-    const cardMarkup =  showCard && <CardComponent
-        fullname={name}
-        onChangeName={() => changeNameHandler()}
-        onInputName={changeInputHandler}
-    >{btns}</CardComponent>
+    const cardMarkup = showCard && listCard.map((record, index) => (<CardComponent
+        key={record.id}
+        fullname={record.fullname}
+        avatar={record.avatar}
+        email={record.email}
+        gender={record.gender}
+        phone={record.phone}
+        onDelete={() => deleteHandler(index)}
+    />))
 
     return (
         <div className="App">
             <div className="container">
                 <button className="button" onClick={toggleShowCard}>Toggle show card</button>
-                { cardMarkup }
+                {cardMarkup}
             </div>
         </div>
     );
