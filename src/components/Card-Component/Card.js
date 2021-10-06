@@ -10,6 +10,7 @@ const Card = (props) => {
             <p>{props.email}</p>
             <p>{props.gender}</p>
             <p>{props.phone}</p>
+            <input type="text" style={{'width': '95%'}} onChange={props.onInputChange} value={props.fullname}/>
             <p><button className="button button-red" onClick={props.onDelete}>Delete</button></p>
             <div>{props.children}</div>
         </div>
@@ -23,6 +24,9 @@ Card.defaultProps = {
     email: faker.internet.email(),
     gender: faker.name.gender,
     phone: faker.phone.phoneNumber(),
+    onInputChange: () => {
+
+    },
     onDelete: () => {
     }
 }
