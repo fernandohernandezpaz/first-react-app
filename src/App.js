@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import './App.css';
-import CardComponent from './components/Card-Component/Card';
+import CardComponent from './components/Card-Class-Component/Card';
 import faker from 'faker';
 
 class App extends Component {
@@ -44,6 +44,11 @@ class App extends Component {
         this.setState({listCard: copyListCard});
     }
 
+    static getDerivedStateFromProps(props, state) {
+        console.log('App js getDerivedStateFromProps', props);
+        return state;
+    }
+
     changeHandler = (event, id) => {
         const index = this.state.listCard.findIndex(card => card.id === id);
         const copyListCard = [...this.state.listCard];
@@ -51,7 +56,12 @@ class App extends Component {
         this.setState({listCard: copyListCard});
     }
 
+    componentDidMount() {
+        console.log('App js componentDidMount');
+    }
+
     render() {
+        console.log('App js rendered');
         const styleToggleButton = {
             backgroundColor: this.state.listCard.length < 3 ? 'lightgreen' : 'green',
             cursor: this.state.listCard.length < 3 ? 'not-allowed' : 'grab',
