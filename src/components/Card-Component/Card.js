@@ -1,24 +1,11 @@
 import '../../App.css';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import faker from 'faker';
 
 const Card = (props) => {
-    const [x, setX] =useState(0);
-    const [y, setY] =useState(0);
-
-    const recordMouse = (e) => {
-        setX(e.clientX)
-        setY(e.clientY)
-    }
-
-    useEffect(() => {
-        window.addEventListener('mousemove', recordMouse)
-    }, []);
-
     return (
         <div className={'card'}>
-            <p>x position: {x}, y position: {y}</p>
-            <img src={props.avatar} alt=""/>
+            {/*<img src={props.avatar} alt=""/>*/}
             <h2>Hello, {props.fullname}</h2>
             <p>{props.email}</p>
             <p>{props.gender}</p>
@@ -32,7 +19,7 @@ const Card = (props) => {
 
 // default properties
 Card.defaultProps = {
-    avatar: faker.image.avatar(),
+    // avatar: faker.image.avatar(),
     fullname: faker.name.findName(),
     email: faker.internet.email(),
     gender: faker.name.gender,

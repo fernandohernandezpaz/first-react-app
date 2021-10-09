@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import './App.css';
 import CardComponent from './components/Card-Component/Card';
 import faker from 'faker';
+import axios from 'axios';
 
 function App() {
     const [showCard, setShowCard] = useState(true);
@@ -9,7 +10,6 @@ function App() {
     // useEffect(() => {
     //     alert('App use Effect');
     // }, [showCard]);
-
     const generateRandomData = (quantityRecord = 3) => {
         if (localStorage.getItem('data')) {
             if (localStorage.getItem('data').length === quantityRecord) {
@@ -18,7 +18,7 @@ function App() {
         }
         const data = new Array(quantityRecord).fill({}).map(record => ({
             id: faker.datatype.uuid(),
-            avatar: faker.image.avatar(),
+            avatar: null,
             fullname: faker.name.findName(),
             email: faker.internet.email(),
             gender: faker.name.gender,
@@ -30,7 +30,14 @@ function App() {
 
     }
 
-    const [listCard, setListCard] = useState(generateRandomData(4));
+    const [listCard, setListCard] = useState([]);
+    useEffect(() => {
+        axios.get('https://jsonplaceholder.typicode.com/users')
+            .then(response => {
+                setListCard(response.data);
+                console.log(response.data);
+            })
+    }, []);
 
     const toggleShowCard = () => setShowCard(!showCard);
     const deleteHandler = (index) => {
@@ -54,10 +61,8 @@ function App() {
 
     const cardMarkup = showCard && listCard.map((record, index) => (<CardComponent
         key={record.id}
-        fullname={record.fullname}
-        avatar={record.avatar}
+        fullname={record.name}
         email={record.email}
-        gender={record.gender}
         phone={record.phone}
         onDelete={() => deleteHandler(index)}
         onInputChange={(event) => changeHandler(event, record.id)}
