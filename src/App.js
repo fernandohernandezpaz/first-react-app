@@ -49,7 +49,11 @@ function App() {
     const changeHandler = (event, id) => {
         const index = listCard.findIndex(card => card.id === id);
         const copyListCard = [...listCard];
-        copyListCard[index].fullname = event.target.value;
+        if (copyListCard[index].fullname) {
+            copyListCard[index].fullname = event.target.value;
+        } else {
+            copyListCard[index].name = event.target.value;
+        }
 
         setListCard(copyListCard);
     }
