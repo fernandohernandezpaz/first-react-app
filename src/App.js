@@ -1,26 +1,19 @@
-import React, {Component} from 'react';
+import React, {useState, useEffect} from 'react';
 import './App.css';
-import CardComponent from './components/Card-Class-Component/Card';
+import CardComponent from './components/Card-Component/Card';
 import faker from 'faker';
 
-class App extends Component {
+function App() {
+    const [showCard, setShowCard] = useState(true);
+    // Example to useEffect
+    // useEffect(() => {
+    //     alert('App use Effect');
+    // }, [showCard]);
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            listCard: this.generateRandomData(4),
-            showCard: true
-        }
-    }
-
-    generateRandomData = (quantityRecord = 3) => {
-        if (!quantityRecord) {
-            return [];
-        }
+    const generateRandomData = (quantityRecord = 3) => {
         if (localStorage.getItem('data')) {
-            const data = JSON.parse(localStorage.getItem('data'))
-            if (data.length === quantityRecord) {
-                return data;
+            if (localStorage.getItem('data').length === quantityRecord) {
+                return JSON.parse(localStorage.getItem('data'));
             }
         }
         const data = new Array(quantityRecord).fill({}).map(record => ({
@@ -34,64 +27,55 @@ class App extends Component {
 
         localStorage.setItem('data', JSON.stringify(data));
         return data;
+
     }
 
-    toggleShowCard = () => this.setState({showCard: !this.state.showCard});
+    const [listCard, setListCard] = useState(generateRandomData(4));
 
-    deleteHandler = (index) => {
-        const copyListCard = [...this.state.listCard];
+    const toggleShowCard = () => setShowCard(!showCard);
+    const deleteHandler = (index) => {
+        const copyListCard = [...listCard];
         copyListCard.splice(index, 1);
-        this.setState({listCard: copyListCard});
+        setListCard(copyListCard);
     }
 
-    static getDerivedStateFromProps(props, state) {
-        console.log('App js getDerivedStateFromProps', props);
-        return state;
-    }
-
-    changeHandler = (event, id) => {
-        const index = this.state.listCard.findIndex(card => card.id === id);
-        const copyListCard = [...this.state.listCard];
+    const changeHandler = (event, id) => {
+        const index = listCard.findIndex(card => card.id === id);
+        const copyListCard = [...listCard];
         copyListCard[index].fullname = event.target.value;
-        this.setState({listCard: copyListCard});
+
+        setListCard(copyListCard);
     }
 
-    componentDidMount() {
-        console.log('App js componentDidMount');
+    const styleToggleButton = {
+        backgroundColor: listCard.length < 3 ? 'lightgreen' : 'green',
+        cursor: listCard.length < 3 ? 'not-allowed' : 'grab',
     }
 
-    render() {
-        console.log('App js rendered');
-        const styleToggleButton = {
-            backgroundColor: this.state.listCard.length < 3 ? 'lightgreen' : 'green',
-            cursor: this.state.listCard.length < 3 ? 'not-allowed' : 'grab',
-        }
+    const cardMarkup = showCard && listCard.map((record, index) => (<CardComponent
+        key={record.id}
+        fullname={record.fullname}
+        avatar={record.avatar}
+        email={record.email}
+        gender={record.gender}
+        phone={record.phone}
+        onDelete={() => deleteHandler(index)}
+        onInputChange={(event) => changeHandler(event, record.id)}
+    />))
 
-        const cardMarkup = this.state.showCard && this.state.listCard.map((record, index) => (<CardComponent
-            key={record.id}
-            fullname={record.fullname}
-            avatar={record.avatar}
-            email={record.email}
-            gender={record.gender}
-            phone={record.phone}
-            onDelete={() => this.deleteHandler(index)}
-            onInputChange={(event) => this.changeHandler(event, record.id)}
-        />));
-
-        return (
-            <div className="App">
-                <div className="container">
-                    <button className="button"
-                            disabled={this.state.listCard.length < 3}
-                            style={styleToggleButton}
-                            onClick={this.toggleShowCard}>
-                        Toggle show card
-                    </button>
-                    {cardMarkup}
-                </div>
+    return (
+        <div className="App">
+            <div className="container">
+                <button className="button"
+                        disabled={listCard.length < 3}
+                        style={styleToggleButton}
+                        onClick={toggleShowCard}>
+                    Toggle {showCard ? 'show' : 'hide'} card
+                </button>
+                {cardMarkup}
             </div>
-        );
-    }
+        </div>
+    );
 }
 
 export default App;
